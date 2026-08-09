@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEP Version Changer — After Effects &amp; Premiere Pro 프로젝트 버전 변환 · Downgrade</title>
+<meta name="description" content="Convert After Effects (.aep) and Premiere Pro (.prproj) project files between versions, entirely in your browser. AE·프리미어 프로젝트 파일을 브라우저에서 다운그레이드하세요. 파일은 업로드되지 않습니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111110'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='26' font-weight='800' fill='%23ffffff' text-anchor='middle'%3EAe%3C/text%3E%3C/svg%3E">
+<!--
+  ── Google AdSense ──────────────────────────────────────────────
+  사이트를 호스팅한 뒤, 아래 주석을 풀고 클라이언트 ID를 넣으세요.
+  After hosting the site, uncomment and add your client ID.
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  ────────────────────────────────────────────────────────────────
+-->
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111110; --dim: #767672; --line: #e7e7e3;
+    --soft: #f6f6f3;
+    --warn: #8a6100; --warn-bg: #fdf6e3;
+    --err: #b3362a; --err-bg: #fdeeec;
+    --ok: #1d7a3d; --ok-bg: #ecf7ef;
+    --sans: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+    --display: "Segoe UI Variable Display", "Segoe UI", Arial, "Malgun Gothic", sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--sans);
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  ::selection { background: var(--fg); color: var(--bg); }
+
+  /* 모서리 메타 라벨 · corner labels */
+  .corner {
+    position: fixed; z-index: 20; font-size: 11px; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--fg); user-select: none;
+    background: color-mix(in srgb, var(--bg) 82%, transparent); padding: 2px 4px;
+  }
+  .corner .sq { font-size: 8px; vertical-align: 2px; }
+  .corner.tl { top: 12px; left: 14px; }
+  .corner.tr { top: 10px; right: 14px; background: none; }
+  .corner.tr button.infopill {
+    border: 1.5px solid var(--fg); border-radius: 999px; padding: 9px 18px;
+    background: var(--bg); font-size: 12px; font-weight: 700;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .corner.tr button.infopill:hover { background: var(--fg); color: var(--bg); text-decoration: none; }
+  .corner.bl { bottom: 12px; left: 14px; color: var(--dim); }
+  .corner.br { bottom: 12px; right: 14px; color: var(--dim); }
+  .corner button {
+    all: unset; cursor: pointer; color: inherit; text-transform: inherit;
+    font: inherit; letter-spacing: inherit;
+  }
+  .corner button:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  main { min-height: 100%; display: flex; flex-direction: column; }
+
+  /* 히어로 = 드롭존 · hero doubles as the drop zone */
+  #drop {
+    min-height: 92vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 64px 16px 40px; transition: background .12s, color .12s;
+  }
+  .dropframe {
+    border: 2px dashed #c9c9c4; border-radius: 20px; cursor: pointer;
+    padding: clamp(32px, 6vw, 72px) clamp(24px, 7vw, 96px);
+    max-width: 960px; width: 100%; transition: border-color .15s, background .15s;
+  }
+  .dropframe:hover { border-color: var(--fg); background: var(--soft); }
+  #drop h1 {
+    font-family: var(--display);
+    font-size: clamp(48px, 12vw, 200px); line-height: .9; font-weight: 800;
+    letter-spacing: -.045em; text-transform: uppercase; word-break: keep-all;
+  }
+  .apptabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 34px; flex-wrap: wrap; }
+  .apptab {
+    all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 9px;
+    padding: 10px 20px; border-radius: 999px; border: 1.5px solid var(--line);
+    font-size: 13.5px; font-weight: 600; color: var(--dim); background: var(--bg);
+    transition: all .12s;
+  }
+  .apptab:hover { border-color: var(--fg); color: var(--fg); }
+  .apptab.active { border-color: var(--fg); color: var(--fg); box-shadow: 0 1px 5px rgba(0,0,0,.1); }
+  .appicon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    font-family: var(--sans);
+  }
+  .appicon.ae, .appicon.pr { background: var(--fg); color: var(--bg); }
+  .apptab:not(.active) .appicon { background: #b9b9b4; }
+  #drop.over .apptab { border-color: var(--bg); color: var(--bg); background: transparent; }
+  #drop.over .appicon { background: var(--bg); color: var(--fg); }
+  #drop h1 .arrow { display: inline-block; animation: bob 1.6s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(.09em); } }
+  #drop .cap {
+    margin-top: 28px; font-size: 13px; letter-spacing: .02em; color: var(--dim); line-height: 1.8;
+  }
+  #drop .cap .kr { display: block; font-size: 12px; }
+  .choose {
+    all: unset; display: inline-block; margin-top: 28px; padding: 14px 36px;
+    background: var(--fg); color: var(--bg); border-radius: 999px; cursor: pointer;
+    font-size: 14px; font-weight: 700; letter-spacing: .04em;
+  }
+  .choose:hover { background: #3a3a38; }
+  .choose .kr { font-weight: 500; opacity: .8; }
+  .howlink {
+    all: unset; display: block; margin: 18px auto 0; cursor: pointer;
+    font-size: 12.5px; color: var(--dim); text-decoration: underline;
+    text-underline-offset: 4px; letter-spacing: .02em;
+  }
+  .howlink:hover { color: var(--fg); }
+  #drop.over .howlink { color: var(--bg); }
+  #drop.over { background: var(--fg); color: var(--bg); }
+  #drop.over .cap, #drop.over .cap .kr { color: var(--bg); }
+  #drop.over .dropframe { border-color: var(--bg); background: transparent; }
+  #drop.over .choose { background: var(--bg); color: var(--fg); }
+
+  /* 광고 슬롯 · ad slots */
+  .ad-slot { max-width: 1080px; margin: 0 auto; padding: 20px 24px; width: 100%; }
+  .ad-slot .ad-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--dim); margin-bottom: 6px;
+  }
+  .ad-slot .ad-box {
+    min-height: 100px; border: 1px dashed var(--line); background: var(--soft);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--dim); font-size: 12px; letter-spacing: .04em;
+  }
+
+  /* 결과 패널 · result panel */
+  .card { display: none; border-top: 1px solid var(--line); }
+  .card.show { display: block; }
+  .panel { max-width: 1080px; margin: 0 auto; padding: 64px 24px 80px; }
+  .fname {
+    font-size: clamp(20px, 4vw, 40px); font-weight: 700; letter-spacing: -.02em;
+    word-break: break-all; line-height: 1.08;
+  }
+  .fmeta { display: none; }
+  .verline {
+    font-family: var(--display);
+    margin-top: 36px; font-size: clamp(44px, 10vw, 150px); font-weight: 800;
+    letter-spacing: -.045em; line-height: .9; text-transform: uppercase;
+  }
+  .verline .badge { display: none; }
+  .verlabel { margin-top: 14px; font-size: 13px; color: var(--dim); letter-spacing: .02em; line-height: 1.7; }
+
+  .rows { margin-top: 48px; border-top: 1px solid var(--line); }
+  .row {
+    display: grid; grid-template-columns: 220px 1fr; gap: 16px;
+    padding: 15px 0; border-bottom: 1px solid var(--line); align-items: center;
+  }
+  .row .k { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); line-height: 1.6; }
+  .row .k .kr { display: block; text-transform: none; letter-spacing: .02em; }
+  .row .v { font-size: 14px; }
+  .row .v.mono { font-family: var(--mono); font-size: 13px; }
+
+  select {
+    all: unset; width: 100%; font-size: 15px; padding: 6px 0; cursor: pointer;
+    border-bottom: 1px solid var(--fg); color: var(--fg);
+  }
+  select option, select optgroup { background: var(--bg); color: var(--fg); font-size: 14px; }
+
+  .msg {
+    display: none; margin-top: 20px; font-size: 13px; line-height: 1.8;
+    padding: 14px 16px; border-radius: 6px;
+  }
+  .msg.show { display: block; }
+  .msg.warn { color: var(--warn); background: var(--warn-bg); }
+  .msg.err  { color: var(--err); background: var(--err-bg); }
+  .msg.ok   { color: var(--ok); background: var(--ok-bg); }
+
+  button.convert {
+    all: unset; display: block; width: 100%; margin-top: 40px; padding: 21px 0;
+    background: var(--fg); color: var(--bg); text-align: center; cursor: pointer;
+    font-size: 14px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    border-radius: 6px;
+  }
+  button.convert:hover { background: #3a3a38; }
+  button.convert .kr { font-weight: 500; letter-spacing: .02em; text-transform: none; opacity: .75; }
+
+  /* 정보 오버레이 · information overlay */
+  #info {
+    position: fixed; inset: 0; z-index: 30; background: var(--bg); color: var(--fg);
+    display: none; overflow-y: auto; padding: 96px 24px;
+  }
+  #info.show { display: block; }
+  #info .inner { max-width: 720px; margin: 0 auto; }
+  #info h2 {
+    font-family: var(--display);
+    font-size: clamp(40px, 8vw, 96px); font-weight: 800; letter-spacing: -.04em;
+    text-transform: uppercase; line-height: .92; margin-bottom: 40px;
+  }
+  #info p { font-size: 14px; line-height: 1.9; margin-bottom: 8px; }
+  #info p.kr { color: var(--dim); margin-bottom: 24px; }
+  #info p b { color: var(--warn); font-weight: 600; }
+  #info code { font-family: var(--mono); font-size: 12.5px; color: var(--dim); }
+  #info .close {
+    all: unset; position: fixed; top: 12px; right: 14px; cursor: pointer;
+    font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    background: var(--bg); padding: 2px 4px;
+  }
+  #info .close:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  footer {
+    border-top: 1px solid var(--line); margin-top: auto;
+    padding: 28px 24px 48px; text-align: center;
+    font-size: 11.5px; color: var(--dim); letter-spacing: .03em; line-height: 1.9;
+  }
+
+  input[type=file] { display: none; }
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 1fr; gap: 6px; }
+    #drop { min-height: 86vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="corner tl"><a href="../" style="color:inherit;text-decoration:none"><span class="sq">■</span> SPKLAB</a> · AE · Premiere Version Changer</div>
+<div class="corner tr"><button id="infoBtn" class="infopill">ⓘ How it works · 사용법</button></div>
+<div class="corner bl"><span class="sq">■</span> Local Only · No Upload — 로컬 처리</div>
+<div class="corner br"><a href="../xray/" style="color:inherit;text-decoration:none">Plugin Checker →</a></div>
+
+<main>
+  <div id="drop">
+    <div class="dropframe">
+      <div class="apptabs" id="appTabs">
+        <button class="apptab active" data-app="aep"><span class="appicon ae">Ae</span> After Effects</button>
+        <button class="apptab" data-app="prproj"><span class="appicon pr">Pr</span> Premiere Pro</button>
+      </div>
+      <h1>Drop<br><span id="heroExt">.AEP</span><br>Here<span class="arrow">↓</span></h1>
+      <div class="cap">
+        Drag your .aep or .prproj file anywhere inside this dashed box — your original is never modified.
+        <span class="kr">이 점선 박스 안에 .aep 또는 .prproj(프리미어) 파일을 끌어다 놓으세요 — 원본은 수정되지 않고 변환된 사본이 다운로드됩니다.</span>
+      </div>
+      <button class="choose" id="chooseBtn">Choose File <span class="kr">· 파일 선택</span></button>
+      <button class="howlink" id="howLink">How does it work? · 어떻게 동작하나요?</button>
+    </div>
+  </div>
+  <input type="file" id="fileInput" accept=".aep,.aet,.prproj">
+
+  <!-- 광고 슬롯 1: 히어로 아래 · Ad slot 1: below hero -->
+  <div class="ad-slot">
+    <div class="ad-label">Advertisement · 광고</div>
+    <div class="ad-box">
+      Ad Space — replace this box with your AdSense unit · 애드센스 코드를 이 자리에 넣으세요
+      <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+    </div>
+  </div>
+
+  <div class="msg err" id="loadError" style="max-width:1080px;margin:0 auto 32px;padding-left:24px;padding-right:24px;"></div>
+
+  <div class="card" id="card">
+    <div class="panel">
+      <div class="fname" id="fname"></div>
+      <div class="fmeta" id="fmeta"></div>
+
+      <div id="detectBox">
+        <div class="verline"><span class="badge" id="badge"></span><span id="verBig"></span></div>
+        <div class="verlabel"><span id="detectLabel"></span></div>
+        <div class="verlabel" id="detectNote"></div>
+      </div>
+
+      <div class="rows">
+        <div class="row">
+          <div class="k">File Size <span class="kr">파일 크기</span></div>
+          <div class="v" id="sizeV"></div>
+        </div>
+        <div class="row">
+          <div class="k">Version Signature <span class="kr">버전 시그니처</span></div>
+          <div class="v mono" id="sigHex"></div>
+        </div>
+        <div class="row">
+          <div class="k">Convert To <span class="kr">변환할 버전</span></div>
+          <div class="v"><select id="targetSel"></select></div>
+        </div>
+      </div>
+
+      <div class="msg warn" id="warnBox"></div>
+      <button class="convert" id="convertBtn">Convert &amp; Download ↓ <span class="kr">· 변환해서 다운로드</span></button>
+      <div class="msg ok" id="doneBox"></div>
+      <div class="msg err" id="convErr"></div>
+    </div>
+  </div>
+
+  <!-- 광고 슬롯 2: 콘텐츠 하단 · Ad slot 2: bottom of content -->
+  <div class="ad-slot">
+    <div class="ad-label">Advertisement · 광고</div>
+    <div class="ad-box">
+      Ad Space — replace this box with your AdSense unit · 애드센스 코드를 이 자리에 넣으세요
+      <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+    </div>
+  </div>
+
+  <footer>
+    All processing happens in your browser — files never leave your computer.<br>
+    모든 처리는 브라우저 안에서 끝나며, 파일은 컴퓨터 밖으로 나가지 않습니다.
+  </footer>
+</main>
+
+<div id="info">
+  <button class="close" id="infoClose">Close · 닫기 ✕</button>
+  <div class="inner">
+    <h2>How It<br>Works</h2>
+    <p>An .aep file is a RIFX binary container. Near the top of the file, the <code>head</code> chunk
+    stores a signature identifying which version of After Effects saved the project. Older versions
+    of AE refuse newer files purely because of this check — so this tool rewrites those bytes
+    (up to 6 of them) to the target version. Your project data is never touched.</p>
+    <p class="kr">.aep 파일은 RIFX 바이너리 컨테이너이고, 파일 앞부분 <code>head</code> 청크에
+    "이 프로젝트를 저장한 AE 버전" 시그니처가 들어 있습니다. 구버전 AE가 신버전 파일을 거부하는 것은
+    이 검사 때문이므로, 해당 바이트(최대 6바이트)만 목표 버전 값으로 교체합니다. 프로젝트 데이터는
+    전혀 건드리지 않습니다.</p>
+    <p><b>Limitations:</b> this is not a true data conversion. Projects that use features introduced
+    in newer versions may show warnings or lose those parts when opened in an older version.
+    Always keep your original file and test the converted copy.</p>
+    <p class="kr"><b>한계:</b> 진짜 데이터 변환이 아니기 때문에, 신버전에서 새로 생긴 기능을 사용한
+    프로젝트는 구버전에서 해당 부분이 무시되거나 경고가 뜰 수 있습니다. 반드시 원본을 보관한 채
+    변환본을 테스트하세요.</p>
+    <p>Upgrading is usually unnecessary — newer versions of AE open older files natively.
+    Everything runs locally in your browser; nothing is uploaded. Max file size ≈ 1 GB (tested with 500 MB).</p>
+    <p class="kr">업그레이드는 보통 필요하지 않습니다 — 신버전 AE는 구버전 파일을 그대로 열 수 있습니다.
+    모든 처리는 브라우저 안에서 끝나며 파일은 어디로도 전송되지 않습니다. 파일당 최대 약 1GB (500MB까지 검증).</p>
+    <p><code>rev 0x5b=2020 · 0x5c=2021 · 0x5d=2022 · 0x5e=2023 · 0x5f=2024 · 0x60=2025 · 0x61=2026</code></p>
+  </div>
+</div>
+
+<script>/*__ENGINE__*/</script>
+<script>/*__PRPROJ__*/</script>
+<script>
+(function () {
+  var drop = document.getElementById('drop');
+  var fileInput = document.getElementById('fileInput');
+  var card = document.getElementById('card');
+  var loadError = document.getElementById('loadError');
+  var fname = document.getElementById('fname');
+  var badge = document.getElementById('badge');
+  var verBig = document.getElementById('verBig');
+  var sizeV = document.getElementById('sizeV');
+  var detectLabel = document.getElementById('detectLabel');
+  var sigHex = document.getElementById('sigHex');
+  var detectNote = document.getElementById('detectNote');
+  var targetSel = document.getElementById('targetSel');
+  var warnBox = document.getElementById('warnBox');
+  var doneBox = document.getElementById('doneBox');
+  var convErr = document.getElementById('convErr');
+  var convertBtn = document.getElementById('convertBtn');
+  var info = document.getElementById('info');
+
+  var state = { mode: 'aep', bytes: null, name: null, info: null, xml: null, prprojVersion: null };
+
+  function buildAepSelect() {
+    targetSel.innerHTML = '';
+    var gv = document.createElement('optgroup'); gv.label = 'Verified signatures · 검증된 시그니처';
+    var ge = document.createElement('optgroup'); ge.label = 'Experimental · 실험적 (일부 바이트만 확인됨)';
+    AEPEngine.VERSIONS.forEach(function (v) {
+      var o = document.createElement('option');
+      o.value = v.id; o.textContent = v.label;
+      (v.verified ? gv : ge).appendChild(o);
+    });
+    targetSel.appendChild(gv); targetSel.appendChild(ge);
+  }
+  function buildPrprojSelect() {
+    targetSel.innerHTML = '';
+    var o = document.createElement('option');
+    o.value = 'prproj-any';
+    o.textContent = 'Any older Premiere Pro (Version → 1) · 모든 구버전 프리미어에서 열리게';
+    targetSel.appendChild(o);
+  }
+  buildAepSelect();
+
+  function fmtSize(n) {
+    if (n > 1048576) return (n / 1048576).toFixed(1) + ' MB';
+    if (n > 1024) return (n / 1024).toFixed(1) + ' KB';
+    return n + ' B';
+  }
+  function hide(el) { el.classList.remove('show'); }
+  function show(el, text) { if (text !== undefined) el.textContent = text; el.classList.add('show'); }
+
+  function bigText(d) {
+    if (d.version) return 'AE ' + d.version.year;
+    if (d.confidence === 'legacy') return 'Legacy';
+    return 'Unknown';
+  }
+
+  function gunzip(bytes) {
+    if (typeof DecompressionStream === 'undefined') {
+      return Promise.reject(new Error('This browser cannot decompress gzip — use Chrome/Edge/Firefox/Safari 16.4+. / 이 브라우저는 gzip 해제를 지원하지 않습니다.'));
+    }
+    var ds = new DecompressionStream('gzip');
+    return new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();
+  }
+
+  function showCard() {
+    card.classList.add('show');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function loadAep(file, bytes) {
+    var parsed;
+    try { parsed = AEPEngine.parse(bytes); }
+    catch (e) {
+      show(loadError, 'Could not read this file. · 파일을 해석할 수 없습니다 — ' + e.message);
+      card.classList.remove('show');
+      return;
+    }
+    state.mode = 'aep'; state.bytes = bytes; state.name = file.name; state.info = parsed;
+    buildAepSelect();
+    fname.textContent = file.name;
+    sizeV.textContent = fmtSize(bytes.length);
+    var d = parsed.detected;
+    verBig.textContent = bigText(d);
+    detectLabel.textContent = d.label;
+    sigHex.textContent = AEPEngine.hex(parsed.signature);
+    detectNote.textContent =
+      d.confidence === 'legacy' ? 'CC/CS-era files: detection only; patching upward is experimental. · CC/CS 시대 파일은 감지만 지원하며, 신버전 패치는 실험적입니다.' :
+      d.confidence === 'unknown' || d.confidence === 'guess' ? 'Unregistered revision — conversion is possible, but verify the result. · 등록되지 않은 리비전입니다. 변환은 가능하지만 결과를 반드시 확인하세요.' : '';
+    updateWarn();
+    showCard();
+  }
+
+  function loadPrproj(file, bytes) {
+    var xmlPromise = PrprojEngine.isGzip(bytes)
+      ? gunzip(bytes).then(function (buf) { return new TextDecoder().decode(buf); })
+      : Promise.resolve(new TextDecoder().decode(bytes));
+    xmlPromise.then(function (xml) {
+      var parsed = PrprojEngine.parseXml(xml); // throws on non-prproj XML
+      state.mode = 'prproj'; state.bytes = bytes; state.name = file.name; state.xml = xml;
+      state.prprojVersion = parsed.version; state.info = null;
+      buildPrprojSelect();
+      fname.textContent = file.name;
+      sizeV.textContent = fmtSize(bytes.length);
+      verBig.textContent = 'PPro v' + parsed.version;
+      detectLabel.textContent = 'Premiere Pro project — internal format version ' + parsed.version + ' / 프리미어 프로 프로젝트 (내부 포맷 버전 ' + parsed.version + ')';
+      sigHex.textContent = '<Project ... Version="' + parsed.version + '">';
+      detectNote.textContent = '';
+      updateWarn();
+      showCard();
+    }).catch(function (e) {
+      show(loadError, 'Could not read this file. · 파일을 해석할 수 없습니다 — ' + e.message);
+      card.classList.remove('show');
+    });
+  }
+
+  function loadFile(file) {
+    hide(loadError); hide(doneBox); hide(convErr);
+    var isAep = /\.(aep|aet)$/i.test(file.name);
+    var isPrproj = /\.prproj$/i.test(file.name);
+    if (!isAep && !isPrproj) {
+      show(loadError, 'Only ".aep" / ".aet" / ".prproj" files are supported. · ".aep", ".aet", ".prproj" 파일만 지원합니다: ' + file.name);
+      card.classList.remove('show');
+      return;
+    }
+    file.arrayBuffer().then(function (buf) {
+      var bytes = new Uint8Array(buf);
+      if (isPrproj) loadPrproj(file, bytes); else loadAep(file, bytes);
+    });
+  }
+
+  function findVer(id) {
+    for (var i = 0; i < AEPEngine.VERSIONS.length; i++)
+      if (AEPEngine.VERSIONS[i].id === id) return AEPEngine.VERSIONS[i];
+    return null;
+  }
+
+  function updateWarn() {
+    hide(doneBox); hide(convErr);
+    if (state.mode === 'prproj') {
+      show(warnBox, 'The downgraded copy opens in older Premiere as a migrated project — sequences and edits carry over, but features that did not exist in the older version may be dropped. Keep your original. · 다운그레이드된 사본은 구버전 프리미어에서 마이그레이션 프로젝트로 열립니다. 시퀀스와 편집은 유지되지만, 구버전에 없던 기능은 사라질 수 있으니 원본을 꼭 보관하세요.');
+      return;
+    }
+    if (!state.info) return;
+    var t = findVer(targetSel.value);
+    var d = state.info.detected;
+    var msgs = [];
+    if (d.version && t.year < d.version.year) {
+      msgs.push('Downgrade ' + d.version.year + ' → ' + t.year + ': features exclusive to newer versions may break or be ignored — keep your original. · 다운그레이드: 신버전 전용 기능을 쓴 부분은 구버전에서 깨지거나 무시될 수 있습니다. 원본을 꼭 보관하세요.');
+    }
+    if (d.version && t.year === d.version.year) {
+      msgs.push('Same year (' + t.year + ') — only the build signature will be normalized. · 이미 같은 연식입니다. 빌드 시그니처만 표준값으로 정리됩니다.');
+    }
+    if (!t.verified) {
+      msgs.push('This target is experimental — only part of its signature is confirmed. · 이 목표 버전은 시그니처 일부만 확인된 실험적 변환입니다.');
+    }
+    if (d.confidence === 'legacy' && t.year >= 2020) {
+      msgs.push('Patching CC/CS files upward is unverified; newer AE opens old files natively anyway. · CC/CS 파일의 신버전 패치는 검증되지 않았습니다. 어차피 신버전 AE는 구버전 파일을 그냥 열 수 있습니다.');
+    }
+    if (msgs.length) show(warnBox, msgs.join(' ')); else hide(warnBox);
+  }
+
+  function convertPrproj() {
+    try {
+      var r = PrprojEngine.patchXml(state.xml);
+      var outName = state.name.replace(/\.prproj$/i, '') + '_downgraded.prproj';
+      var xmlBytes = new TextEncoder().encode(r.xml);
+      var blobPromise;
+      if (typeof CompressionStream !== 'undefined') {
+        var cs = new CompressionStream('gzip');
+        blobPromise = new Response(new Blob([xmlBytes]).stream().pipeThrough(cs)).blob();
+      } else {
+        blobPromise = Promise.resolve(new Blob([xmlBytes], { type: 'application/xml' })); // Premiere는 비압축 XML도 읽음
+      }
+      blobPromise.then(function (blob) {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = outName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+        show(doneBox, 'Done — "' + outName + '" downloaded (Version ' + r.from + ' → 1). Any older Premiere Pro can now open it. · 완료 — 이제 어떤 구버전 프리미어에서도 열립니다.');
+      });
+    } catch (e) {
+      show(convErr, 'Conversion failed. · 변환 실패 — ' + e.message);
+    }
+  }
+
+  function convert() {
+    hide(doneBox); hide(convErr);
+    if (state.mode === 'prproj') { convertPrproj(); return; }
+    try {
+      var r = AEPEngine.patch(state.bytes, targetSel.value);
+      var base = state.name.replace(/\.(aep|aet)$/i, '');
+      var ext = (state.name.match(/\.(aep|aet)$/i) || ['.aep'])[0];
+      var outName = base + '_AE' + r.target.year + ext;
+      var blob = new Blob([r.bytes], { type: 'application/octet-stream' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = outName;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+      show(doneBox, 'Done — "' + outName + '" downloaded (' + r.changed.length + ' bytes changed). Open it in After Effects ' + r.target.year + '. · 완료 — 변환된 사본이 다운로드됐습니다. AE ' + r.target.year + '에서 열어보세요.');
+    } catch (e) {
+      show(convErr, 'Conversion failed. · 변환 실패 — ' + e.message);
+    }
+  }
+
+  // 점선 박스 안쪽을 클릭했을 때만 파일 선택창을 연다
+  document.querySelector('.dropframe').addEventListener('click', function () { fileInput.click(); });
+  document.getElementById('chooseBtn').addEventListener('click', function (e) {
+    e.stopPropagation(); fileInput.click();
+  });
+  // 앱 탭: 히어로 문구만 바꾸는 표시용 토글 — 어떤 파일을 넣어도 자동 감지된다
+  document.querySelectorAll('.apptab').forEach(function (tab) {
+    tab.addEventListener('click', function (e) {
+      e.stopPropagation();
+      document.querySelectorAll('.apptab').forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('heroExt').textContent = tab.dataset.app === 'prproj' ? '.PRPROJ' : '.AEP';
+    });
+  });
+  fileInput.addEventListener('change', function () { if (fileInput.files[0]) loadFile(fileInput.files[0]); fileInput.value = ''; });
+  ;['dragenter', 'dragover'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+  });
+  ;['dragleave', 'drop'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
+  });
+  drop.addEventListener('drop', function (e) {
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+  window.addEventListener('dragover', function (e) { e.preventDefault(); });
+  window.addEventListener('drop', function (e) {
+    e.preventDefault();
+    if (e.target.closest && e.target.closest('#drop')) return;
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+  targetSel.addEventListener('change', updateWarn);
+  convertBtn.addEventListener('click', convert);
+  // 오버레이를 히스토리에 쌓아 마우스 뒤로가기 버튼으로도 닫히게 한다
+  var infoOpen = false;
+  function openInfo() {
+    if (infoOpen) return;
+    infoOpen = true;
+    info.classList.add('show');
+    try { history.pushState({ infoOverlay: true }, ''); } catch (e) {}
+  }
+  function closeInfo(fromPop) {
+    if (!infoOpen) return;
+    infoOpen = false;
+    info.classList.remove('show');
+    if (!fromPop && history.state && history.state.infoOverlay) history.back();
+  }
+  window.addEventListener('popstate', function () { closeInfo(true); });
+  document.getElementById('infoBtn').addEventListener('click', openInfo);
+  document.getElementById('howLink').addEventListener('click', function (e) {
+    e.stopPropagation(); openInfo();
+  });
+  document.getElementById('infoClose').addEventListener('click', function () { closeInfo(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeInfo(false); });
+})();
+</script>
+</body>
+</html>
