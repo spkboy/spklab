@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About · 소개 — SPKLAB</title>
+<meta name="description" content="SPKLAB is a set of free, local-only browser tools for After Effects and Premiere Pro, built by a working motion designer. 현업 모션 디자이너가 만든 AE·프리미어 무료 브라우저 도구 모음입니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111110'/%3E%3Ctext x='32' y='40' font-family='Arial,sans-serif' font-size='19' font-weight='800' fill='%23ffffff' text-anchor='middle'%3ESPK%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --bg:#ffffff; --fg:#111110; --dim:#767672; --line:#e7e7e3; --soft:#f6f6f3;
+    --sans:"Segoe UI","Malgun Gothic",Arial,sans-serif;
+    --display:"Segoe UI Variable Display","Segoe UI",Arial,"Malgun Gothic",sans-serif; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  ::selection { background:var(--fg); color:var(--bg); }
+  .corner { position:fixed; z-index:20; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    background:color-mix(in srgb,var(--bg) 82%,transparent); padding:2px 4px; }
+  .corner .sq { font-size:8px; vertical-align:2px; }
+  .corner.tl { top:12px; left:14px; } .corner.tl a { color:inherit; text-decoration:none; }
+  .corner.tl a:hover { text-decoration:underline; text-underline-offset:3px; }
+  main { max-width:760px; margin:0 auto; padding:110px 24px 60px; }
+  h1 { font-family:var(--display); font-size:clamp(34px,7vw,72px); font-weight:800;
+    letter-spacing:-.04em; line-height:.95; text-transform:uppercase; margin-bottom:44px; }
+  h2 { font-size:19px; font-weight:700; margin:38px 0 12px; }
+  p, li { font-size:14.5px; line-height:1.9; }
+  p { margin-bottom:14px; } ul { margin:0 0 14px 20px; }
+  p.en { color:var(--dim); }
+  a { color:inherit; }
+  .toolrow { display:block; border:1.5px solid var(--fg); border-radius:8px; padding:16px 18px;
+    margin:10px 0; text-decoration:none; font-weight:600; font-size:14px; }
+  .toolrow:hover { background:var(--fg); color:var(--bg); }
+  .toolrow small { display:block; font-weight:400; color:var(--dim); margin-top:3px; }
+  .toolrow:hover small { color:var(--bg); opacity:.8; }
+  footer { border-top:1px solid var(--line); margin-top:64px; padding-top:22px;
+    font-size:12px; color:var(--dim); line-height:2; }
+  footer a { margin-right:14px; }
+</style>
+</head>
+<body>
+<div class="corner tl"><a href="../"><span class="sq">■</span> SPKLAB</a> · About</div>
+<main>
+  <h1>About<br>SPKLAB</h1>
+
+  <p>SPKLAB은 현업에서 After Effects와 Premiere Pro로 작업하는 모션 디자이너가
+  "이런 게 있으면 좋겠는데"를 직접 만든 무료 도구 모음입니다. 버전이 안 맞아 프로젝트가 안 열리고,
+  템플릿을 샀는데 플러그인이 없어서 이펙트가 깨지는 — 영상 하는 사람이라면 누구나 겪는 그 문제들을
+  브라우저에서 몇 초 만에 해결하는 것이 목표입니다.</p>
+  <p class="en">SPKLAB is a set of free browser tools built by a working motion designer —
+  for the everyday headaches of After Effects &amp; Premiere Pro work: projects that won't open
+  because of version mismatches, and templates that break because of missing plugins.</p>
+
+  <h2>철학 · Principles</h2>
+  <ul>
+    <li><b>로컬 처리</b> — 모든 도구는 브라우저 안에서만 동작하고, 파일은 절대 업로드되지 않습니다. 클라이언트 작업물을 다루는 사람에게 이건 타협할 수 없는 조건이니까요. <span class="en">Everything runs locally; your files never leave your computer.</span></li>
+    <li><b>원본 보존</b> — 어떤 도구도 원본 파일을 수정하지 않습니다. 변환 결과는 항상 사본으로 다운로드됩니다. <span class="en">Originals are never modified — results are always downloaded as copies.</span></li>
+    <li><b>무료</b> — 가입도 결제도 없습니다. <span class="en">Free, no sign-up.</span></li>
+  </ul>
+
+  <h2>도구 · Tools</h2>
+  <a class="toolrow" href="../scanner/">01 Project Scanner
+    <small>열기 전에 플러그인·폰트·저장 버전 확인 · Check plugins, fonts &amp; version before opening</small></a>
+  <a class="toolrow" href="../convert/">02 Version Changer
+    <small>신버전 프로젝트를 구버전에서 열기 · Open newer projects in older AE / Premiere</small></a>
+
+  <h2>문의 · Contact</h2>
+  <p>버그 제보, 기능 제안, 감지 안 되는 플러그인 제보는
+  <a href="https://github.com/spkboy/spklab/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 남겨주세요.
+  <span class="en">Bug reports and suggestions are welcome via GitHub issues.</span></p>
+
+  <footer>
+    <a href="../">SPKLAB</a> <a href="../scanner/">Project Scanner</a> <a href="../convert/">Version Changer</a>
+    <a href="../guides/">Guides</a> <a href="./">About</a> <a href="../privacy/">Privacy</a>
+  </footer>
+</main>
+</body>
+</html>

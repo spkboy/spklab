@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>After Effects "신버전에서 만든 프로젝트" 오류 해결하기 · Open a newer .aep in older After Effects — SPKLAB</title>
+<meta name="description" content="After Effects에서 '이 프로젝트는 신버전에서 저장되었습니다' 오류가 뜰 때 구버전에서 여는 3가지 방법. How to fix the 'project was created with a newer version' error and open a newer .aep in an older After Effects.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111110'/%3E%3Ctext x='32' y='40' font-family='Arial,sans-serif' font-size='19' font-weight='800' fill='%23ffffff' text-anchor='middle'%3ESPK%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --bg:#ffffff; --fg:#111110; --dim:#767672; --line:#e7e7e3; --soft:#f6f6f3;
+    --warn:#8a6100; --warn-bg:#fdf6e3;
+    --sans:"Segoe UI","Malgun Gothic",Arial,sans-serif;
+    --display:"Segoe UI Variable Display","Segoe UI",Arial,"Malgun Gothic",sans-serif;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  ::selection { background:var(--fg); color:var(--bg); }
+  .corner { position:fixed; z-index:20; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    background:color-mix(in srgb,var(--bg) 82%,transparent); padding:2px 4px; }
+  .corner .sq { font-size:8px; vertical-align:2px; }
+  .corner.tl { top:12px; left:14px; } .corner.tl a { color:inherit; text-decoration:none; }
+  .corner.tl a:hover { text-decoration:underline; text-underline-offset:3px; }
+  main { max-width:760px; margin:0 auto; padding:110px 24px 60px; }
+  h1 { font-family:var(--display); font-size:clamp(28px,5.5vw,52px); font-weight:800;
+    letter-spacing:-.03em; line-height:1.05; margin-bottom:12px; }
+  .meta { font-size:12px; color:var(--dim); margin-bottom:40px; }
+  h2 { font-size:20px; font-weight:700; margin:40px 0 12px; }
+  p, li { font-size:14.5px; line-height:1.9; }
+  p { margin-bottom:14px; } ul, ol { margin:0 0 14px 20px; }
+  p.en { color:var(--dim); }
+  code { font-family:var(--mono); font-size:13px; background:var(--soft); padding:1px 6px; border-radius:4px; }
+  a { color:inherit; }
+  .note { background:var(--warn-bg); color:var(--warn); padding:14px 16px; border-radius:6px;
+    font-size:13.5px; line-height:1.8; margin:16px 0; }
+  .tool-cta { display:block; border:1.5px solid var(--fg); border-radius:8px; padding:17px;
+    text-align:center; font-weight:700; font-size:14px; text-decoration:none; margin:20px 0; }
+  .tool-cta:hover { background:var(--fg); color:var(--bg); }
+  .ad-slot { margin:44px 0 0; }
+  .ad-slot .ad-label { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim); margin-bottom:6px; }
+  .ad-slot .ad-box { min-height:100px; border:1px dashed var(--line); background:var(--soft);
+    display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:12px; }
+  footer { border-top:1px solid var(--line); margin-top:56px; padding-top:22px;
+    font-size:12px; color:var(--dim); line-height:2; }
+  footer a { margin-right:14px; }
+</style>
+</head>
+<body>
+<div class="corner tl"><a href="../../"><span class="sq">■</span> SPKLAB</a> · Guides</div>
+<main>
+  <h1>After Effects "신버전에서 만든 프로젝트" 오류 해결하기</h1>
+  <div class="meta">How to open a newer .aep in an older After Effects · SPKLAB Guides</div>
+
+  <p>협업하다 보면 반드시 만나는 오류가 있습니다. 상대가 보낸 .aep를 열었더니 —
+  <i>"이 프로젝트는 After Effects의 신버전에서 저장되었기 때문에 열 수 없습니다"</i>.
+  AE는 상위 버전 호환을 지원하지 않아서, 2026에서 저장한 프로젝트는 2025에서 열리지 않습니다.
+  반대로 구버전 파일을 신버전에서 여는 건 언제나 가능합니다.</p>
+  <p class="en">After Effects cannot open projects saved by a newer version — a 2026 project won't
+  open in 2025, while the reverse (old file, new AE) always works. Here are your three options.</p>
+
+  <h2>왜 이런 오류가 날까? · Why this happens</h2>
+  <p>.aep 파일 앞부분에는 "이 프로젝트를 저장한 AE 버전" 시그니처가 기록되어 있고, 구버전 AE는
+  파일을 해석하기 전에 이 값부터 검사합니다. 즉 프로젝트 데이터가 진짜로 호환 불가능해서가 아니라,
+  <b>버전 검사에서 먼저 거절</b>되는 경우가 대부분입니다. 실제로 신버전 전용 기능을 쓰지 않은
+  프로젝트라면 데이터 자체는 구버전에서도 대부분 읽을 수 있습니다.</p>
+  <p class="en">The .aep header stores a version signature that older AE checks before parsing
+  anything. In most cases the file is rejected by this check alone — not because the actual project
+  data is incompatible.</p>
+
+  <h2>방법 1 — 보낸 사람에게 구버전 저장을 요청 · Ask for a back-save</h2>
+  <p>신버전 AE에는 <code>File → Save As → Save a Copy As...</code> 메뉴가 있어서 한두 버전 아래로
+  저장할 수 있습니다. 가장 공식적인 방법이지만, 보통 1~2개 버전 아래까지만 지원되고
+  상대방의 손이 한 번 더 필요합니다. 상대가 바쁘거나 연락이 안 되면 쓸 수 없는 방법이죠.</p>
+  <p class="en">Newer AE can "Save a Copy As" one or two versions back — the official route, but it
+  only reaches 1–2 versions down and requires the original author's help.</p>
+
+  <h2>방법 2 — 브라우저에서 버전 변환 (추천) · Convert the file in your browser</h2>
+  <p><a href="../../convert/">SPKLAB Version Changer</a>에 .aep 파일을 드래그하면 저장 버전을 감지하고,
+  원하는 버전(2020~2026)으로 변환한 사본을 다운로드해줍니다. 파일은 업로드되지 않고 브라우저 안에서만
+  처리되며, 원본은 그대로 보존됩니다. 변환 원리는 위에서 설명한 버전 시그니처를 목표 버전 값으로
+  바꾸는 것 — 프로젝트 데이터는 1바이트도 건드리지 않습니다.</p>
+  <ol>
+    <li>Version Changer 페이지를 엽니다</li>
+    <li>.aep 파일을 점선 박스에 드래그합니다 (감지된 버전이 표시됩니다)</li>
+    <li>목표 버전을 선택하고 Convert &amp; Download를 누릅니다</li>
+    <li>다운로드된 사본을 구버전 AE에서 엽니다</li>
+  </ol>
+  <a class="tool-cta" href="../../convert/">Version Changer 열기 · Open Version Changer →</a>
+  <div class="note">⚠ 신버전에서 새로 생긴 기능(새 이펙트, 새 레이어 속성 등)을 쓴 부분은 구버전에서
+  무시되거나 경고가 뜰 수 있습니다. 원본을 보관한 채 변환본으로 확인하세요. 이 한계는 어떤 다운그레이드
+  방법을 쓰든 동일합니다.</div>
+
+  <h2>방법 3 — 구버전 파일만 받도록 워크플로 정리 · Prevent it upstream</h2>
+  <p>외주·협업이 잦다면 프로젝트 시작 전에 팀의 AE 버전을 통일하거나, 납품 규칙에 "AE 20XX 형식으로
+  저장" 조건을 넣는 것이 근본적인 해결책입니다. 템플릿을 판매한다면 구버전(보통 2년 전 버전)으로
+  저장해서 올리는 것이 구매자 문의를 크게 줄여줍니다.</p>
+  <p class="en">For recurring collaborations, agree on an AE version up front — and if you sell
+  templates, save them a couple of versions back to reduce support requests.</p>
+
+  <h2>자주 묻는 질문 · FAQ</h2>
+  <p><b>Q. 변환하면 파일이 손상되지 않나요?</b><br>
+  원본은 절대 수정되지 않고 사본만 만들어집니다. 사본도 버전 표시 바이트만 바뀌므로 데이터 손상과는
+  다른 차원의 작업입니다. 다만 신기능 사용 부분의 동작은 구버전에서 보장되지 않습니다.</p>
+  <p><b>Q. 회사 보안상 파일을 외부에 올릴 수 없는데요.</b><br>
+  Version Changer는 서버가 없는 정적 페이지라 파일이 컴퓨터 밖으로 나가지 않습니다.
+  인터넷을 끊은 상태에서도 페이지가 열려 있으면 동작합니다.</p>
+  <p><b>Q. 얼마나 오래된 버전까지 지원하나요?</b><br>
+  변환 목표로는 AE 2020(17.x)부터 지원하고, 감지는 CS 시대 파일까지 됩니다.</p>
+
+  <div class="ad-slot">
+    <div class="ad-label">Advertisement · 광고</div>
+    <div class="ad-box">Ad Space — replace this box with your AdSense unit · 애드센스 코드를 이 자리에 넣으세요
+      <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+    </div>
+  </div>
+
+  <footer>
+    <a href="../../">SPKLAB</a> <a href="../../scanner/">Project Scanner</a> <a href="../../convert/">Version Changer</a>
+    <a href="../">Guides</a> <a href="../../about/">About</a> <a href="../../privacy/">Privacy</a>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premiere Pro "This project was saved in a newer version" 해결하기 · Open a newer .prproj in older Premiere — SPKLAB</title>
+<meta name="description" content="프리미어 프로에서 신버전 프로젝트가 안 열릴 때(.prproj 다운그레이드) 해결 방법 총정리. How to fix Premiere Pro's 'saved in a newer version of Adobe Premiere Pro' error and downgrade a .prproj.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111110'/%3E%3Ctext x='32' y='40' font-family='Arial,sans-serif' font-size='19' font-weight='800' fill='%23ffffff' text-anchor='middle'%3ESPK%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --bg:#ffffff; --fg:#111110; --dim:#767672; --line:#e7e7e3; --soft:#f6f6f3;
+    --warn:#8a6100; --warn-bg:#fdf6e3;
+    --sans:"Segoe UI","Malgun Gothic",Arial,sans-serif;
+    --display:"Segoe UI Variable Display","Segoe UI",Arial,"Malgun Gothic",sans-serif;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--fg); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  ::selection { background:var(--fg); color:var(--bg); }
+  .corner { position:fixed; z-index:20; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    background:color-mix(in srgb,var(--bg) 82%,transparent); padding:2px 4px; }
+  .corner .sq { font-size:8px; vertical-align:2px; }
+  .corner.tl { top:12px; left:14px; } .corner.tl a { color:inherit; text-decoration:none; }
+  .corner.tl a:hover { text-decoration:underline; text-underline-offset:3px; }
+  main { max-width:760px; margin:0 auto; padding:110px 24px 60px; }
+  h1 { font-family:var(--display); font-size:clamp(28px,5.5vw,52px); font-weight:800;
+    letter-spacing:-.03em; line-height:1.05; margin-bottom:12px; }
+  .meta { font-size:12px; color:var(--dim); margin-bottom:40px; }
+  h2 { font-size:20px; font-weight:700; margin:40px 0 12px; }
+  p, li { font-size:14.5px; line-height:1.9; }
+  p { margin-bottom:14px; } ul, ol { margin:0 0 14px 20px; }
+  p.en { color:var(--dim); }
+  code { font-family:var(--mono); font-size:13px; background:var(--soft); padding:1px 6px; border-radius:4px; }
+  a { color:inherit; }
+  .note { background:var(--warn-bg); color:var(--warn); padding:14px 16px; border-radius:6px;
+    font-size:13.5px; line-height:1.8; margin:16px 0; }
+  .tool-cta { display:block; border:1.5px solid var(--fg); border-radius:8px; padding:17px;
+    text-align:center; font-weight:700; font-size:14px; text-decoration:none; margin:20px 0; }
+  .tool-cta:hover { background:var(--fg); color:var(--bg); }
+  .ad-slot { margin:44px 0 0; }
+  .ad-slot .ad-label { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--dim); margin-bottom:6px; }
+  .ad-slot .ad-box { min-height:100px; border:1px dashed var(--line); background:var(--soft);
+    display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:12px; }
+  footer { border-top:1px solid var(--line); margin-top:56px; padding-top:22px;
+    font-size:12px; color:var(--dim); line-height:2; }
+  footer a { margin-right:14px; }
+</style>
+</head>
+<body>
+<div class="corner tl"><a href="../../"><span class="sq">■</span> SPKLAB</a> · Guides</div>
+<main>
+  <h1>Premiere Pro "This project was saved in a newer version" 해결하기</h1>
+  <div class="meta">How to open a newer .prproj in an older Premiere Pro · SPKLAB Guides</div>
+
+  <p>프리미어에서도 AE와 똑같은 벽이 있습니다. 신버전에서 저장한 .prproj를 구버전에서 열면
+  <i>"This project was saved in a newer version of Adobe Premiere Pro and cannot be opened in this version"</i>
+  오류가 뜹니다. 편집실 버전이 제각각이거나, 외주 파일을 받았거나, 구버전이 안정적이라 업그레이드를
+  미루고 있다면 피할 수 없는 문제입니다.</p>
+  <p class="en">Premiere Pro refuses to open projects saved by a newer version. If your team runs
+  mixed versions, this error is a daily reality — here's how to get around it.</p>
+
+  <h2>다행히 AE보다 훨씬 쉽습니다 · The good news</h2>
+  <p>.prproj 파일의 정체는 <b>gzip으로 압축된 XML 문서</b>입니다. 그리고 프리미어의 버전 검사는
+  XML 안의 버전 숫자 하나로 이루어집니다. 이 숫자를 낮추면 구버전 프리미어가 파일을
+  "옛날 프로젝트"로 인식하고, 자기 형식으로 <b>자동 마이그레이션</b>하면서 열어줍니다.
+  시퀀스, 컷 편집, 기본 이펙트는 이 과정에서 유지됩니다.</p>
+  <p class="en">A .prproj is just gzip-compressed XML, and the version gate is a single number
+  inside. Lower it, and older Premiere opens the file as a migrated project — sequences and edits
+  carry over.</p>
+
+  <h2>방법 1 — 브라우저에서 변환 (추천) · Convert in your browser</h2>
+  <p><a href="../../convert/">SPKLAB Version Changer</a>가 위 과정을 자동으로 해줍니다:</p>
+  <ol>
+    <li>Version Changer 페이지에서 <b>Premiere Pro 탭</b>을 선택하거나, 그냥 .prproj 파일을 드래그합니다</li>
+    <li>감지된 내부 버전을 확인하고 Convert &amp; Download를 누릅니다</li>
+    <li>다운로드된 <code>파일명_downgraded.prproj</code>를 구버전 프리미어에서 엽니다 — 어떤 구버전이든 열립니다</li>
+  </ol>
+  <p>파일은 업로드되지 않고 브라우저 안에서 압축 해제 → 버전 수정 → 재압축됩니다. 원본은 그대로
+  보존됩니다.</p>
+  <a class="tool-cta" href="../../convert/">Version Changer 열기 · Open Version Changer →</a>
+  <div class="note">⚠ 구버전에 없는 기능(신형 텍스트/그래픽, 새 이펙트 등)을 쓴 부분은 마이그레이션
+  과정에서 빠지거나 오프라인 처리될 수 있습니다. 열린 뒤 시퀀스를 한 번 훑어보고, 원본은 꼭 보관하세요.</div>
+
+  <h2>방법 2 — 수동으로 하기 · The manual way</h2>
+  <p>같은 일을 손으로 할 수도 있습니다. 참고로만 알아두세요:</p>
+  <ol>
+    <li>.prproj 확장자를 .zip처럼 다루는 대신, 7-Zip 등으로 <b>gzip 해제</b>합니다</li>
+    <li>나온 XML을 텍스트 에디터로 열어 <code>&lt;Project ... Version="XX"&gt;</code>의 숫자를 <code>1</code>로 바꿉니다</li>
+    <li>다시 gzip으로 압축하고 확장자를 .prproj로 되돌립니다</li>
+  </ol>
+  <p class="en">Decompress the gzip, change the <code>Version</code> attribute of the
+  <code>&lt;Project&gt;</code> element to <code>1</code>, re-compress. The browser tool does exactly
+  this, minus the fiddling.</p>
+
+  <h2>방법 3 — XML로 내보내기 (구버전 프리미어끼리) · Export as XML</h2>
+  <p>보낸 사람이 협조할 수 있다면 <code>File → Export → Final Cut Pro XML</code>로 시퀀스를 내보내
+  구버전에서 가져오는 방법도 있습니다. 다만 이펙트·그래픽 상당수가 유실되고 컷 위주로만 넘어오므로,
+  최후의 수단에 가깝습니다.</p>
+
+  <h2>자주 묻는 질문 · FAQ</h2>
+  <p><b>Q. 자동 저장 파일도 변환되나요?</b><br>
+  네. Auto-Save 폴더의 .prproj도 같은 형식이라 똑같이 변환됩니다.</p>
+  <p><b>Q. 팀 프로젝트(Team Projects)도 되나요?</b><br>
+  클라우드 팀 프로젝트는 .prproj 파일이 아니므로 해당되지 않습니다. 로컬 프로젝트로 내보낸 뒤 변환하세요.</p>
+  <p><b>Q. 회사 파일이라 외부 업로드가 금지되어 있습니다.</b><br>
+  Version Changer는 서버 없이 브라우저 안에서만 동작합니다. 파일이 컴퓨터 밖으로 나가지 않습니다.</p>
+
+  <div class="ad-slot">
+    <div class="ad-label">Advertisement · 광고</div>
+    <div class="ad-box">Ad Space — replace this box with your AdSense unit · 애드센스 코드를 이 자리에 넣으세요
+      <!--
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+    </div>
+  </div>
+
+  <footer>
+    <a href="../../">SPKLAB</a> <a href="../../scanner/">Project Scanner</a> <a href="../../convert/">Version Changer</a>
+    <a href="../">Guides</a> <a href="../../about/">About</a> <a href="../../privacy/">Privacy</a>
+  </footer>
+</main>
+</body>
+</html>
