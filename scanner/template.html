@@ -218,11 +218,31 @@
     .plug .ct { grid-column: 2; }
     #drop { min-height: 86vh; }
   }
+
+  .topnav {
+    position: fixed; top: 10px; left: 12px; z-index: 25;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+    font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(6px); padding: 4px; border-radius: 999px;
+    border: 1px solid var(--line); max-width: calc(100vw - 24px);
+  }
+  .topnav a { color: var(--fg); text-decoration: none; padding: 7px 13px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+  .topnav a.brand { font-weight: 800; }
+  .topnav a .sq { font-size: 8px; vertical-align: 2px; }
+  .topnav a:hover { background: var(--soft); }
+  .topnav a.active { background: var(--fg); color: var(--bg); }
+  @media (max-width: 640px) { .topnav a { padding: 6px 9px; font-size: 10px; } .corner.tr { top: 56px; } }
 </style>
 </head>
 <body>
 
-<div class="corner tl"><a href="../" style="color:inherit;text-decoration:none"><span class="sq">■</span> SPKLAB</a> · Project Scanner</div>
+<nav class="topnav">
+  <a class="brand" href="../"><span class="sq">■</span> SPKLAB</a>
+  <a href="../scanner/" class="active">Scanner</a>
+  <a href="../convert/">Version Changer</a>
+  <a href="../guides/">Guides</a>
+</nav>
 <div class="corner tr"><button id="infoBtn" class="infopill">ⓘ How it works · 사용법</button></div>
 <div class="corner bl"><span class="sq">■</span> Local Only · No Upload — 로컬 처리</div>
 <div class="corner br"><a href="../convert/">Version Changer →</a></div>

@@ -43,10 +43,30 @@
   footer { border-top:1px solid var(--line); margin-top:56px; padding-top:22px;
     font-size:12px; color:var(--dim); line-height:2; }
   footer a { margin-right:14px; }
+
+  .topnav {
+    position: fixed; top: 10px; left: 12px; z-index: 25;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 2px;
+    font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(6px); padding: 4px; border-radius: 999px;
+    border: 1px solid var(--line); max-width: calc(100vw - 24px);
+  }
+  .topnav a { color: var(--fg); text-decoration: none; padding: 7px 13px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+  .topnav a.brand { font-weight: 800; }
+  .topnav a .sq { font-size: 8px; vertical-align: 2px; }
+  .topnav a:hover { background: var(--soft); }
+  .topnav a.active { background: var(--fg); color: var(--bg); }
+  @media (max-width: 640px) { .topnav a { padding: 6px 9px; font-size: 10px; } }
 </style>
 </head>
 <body>
-<div class="corner tl"><a href="../../"><span class="sq">■</span> SPKLAB</a> · Guides</div>
+<nav class="topnav">
+  <a class="brand" href="../../"><span class="sq">■</span> SPKLAB</a>
+  <a href="../../scanner/">Scanner</a>
+  <a href="../../convert/">Version Changer</a>
+  <a href="../../guides/" class="active">Guides</a>
+</nav>
 <main>
   <h1>After Effects "신버전에서 만든 프로젝트" 오류 해결하기</h1>
   <div class="meta">How to open a newer .aep in an older After Effects · SPKLAB Guides</div>
