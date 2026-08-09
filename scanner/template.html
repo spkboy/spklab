@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AEP X-Ray — After Effects &amp; Premiere Pro 플러그인 검사기 · Plugin Checker</title>
+<title>Project Scanner — After Effects &amp; Premiere Pro 플러그인·폰트 검사기 · Plugin &amp; Font Checker · SPKLAB</title>
 <meta name="description" content="Check which third-party plugins an After Effects (.aep) or Premiere Pro (.prproj) project needs — before opening it. Entirely in your browser. AE·프리미어 템플릿을 열기 전에 필요한 서드파티 플러그인을 확인하세요. 파일은 업로드되지 않습니다.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23ffffff'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='24' font-weight='800' fill='%23111110' text-anchor='middle'%3EXr%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23ffffff'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='24' font-weight='800' fill='%23111110' text-anchor='middle'%3ESc%3C/text%3E%3C/svg%3E">
 <!--
   ── Google AdSense ──────────────────────────────────────────────
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
@@ -221,7 +221,7 @@
 </head>
 <body>
 
-<div class="corner tl"><a href="../" style="color:inherit;text-decoration:none"><span class="sq">■</span> SPKLAB</a> · AE · Premiere X-Ray</div>
+<div class="corner tl"><a href="../" style="color:inherit;text-decoration:none"><span class="sq">■</span> SPKLAB</a> · Project Scanner</div>
 <div class="corner tr"><button id="infoBtn" class="infopill">ⓘ How it works · 사용법</button></div>
 <div class="corner bl"><span class="sq">■</span> Local Only · No Upload — 로컬 처리</div>
 <div class="corner br"><a href="../convert/">Version Changer →</a></div>
@@ -322,7 +322,7 @@
 <div id="info">
   <button class="close" id="infoClose">Close · 닫기 ✕</button>
   <div class="inner">
-    <h2>X-Ray<br>Your .AEP</h2>
+    <h2>Scan<br>Your Project</h2>
     <p>Every effect applied in an After Effects project is recorded in the .aep file with a
     unique "match name" (e.g. <code>ADBE Gaussian Blur 2</code> or <code>tc Particular</code>).
     This tool walks the project's binary structure, collects every effect instance, and
@@ -486,7 +486,7 @@
     x.strokeRect(30, 30, W - 60, H - 60);
     x.setLineDash([]);
     x.fillStyle = '#111110'; x.font = '700 22px ' + SANS;
-    x.fillText('■ AEP X-RAY', 68, 92);
+    x.fillText('■ SPKLAB · PROJECT SCANNER', 68, 92);
     x.textAlign = 'right'; x.fillStyle = '#767672';
     x.fillText('spkboy.github.io/spklab', W - 68, 92);
     x.textAlign = 'left';
@@ -525,7 +525,7 @@
     c.toBlob(function (blob) {
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = name.replace(/\.(aep|aet|prproj)$/i, '') + '_xray.png';
+      a.download = name.replace(/\.(aep|aet|prproj)$/i, '') + '_scan.png';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
     }, 'image/png');

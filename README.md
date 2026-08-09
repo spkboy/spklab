@@ -7,7 +7,7 @@ Free, local-only browser tools for motion designers & editors. Files never leave
 
 | Tool | What it does |
 |---|---|
-| [X-Ray](https://spkboy.github.io/spklab/xray/) | See which third-party plugins & fonts an `.aep` / `.prproj` project needs — before opening it · 플러그인·폰트 검사기 |
+| [Project Scanner](https://spkboy.github.io/spklab/scanner/) | See which third-party plugins & fonts an `.aep` / `.prproj` project needs — before opening it · 플러그인·폰트 검사기 |
 | [Version Changer](https://spkboy.github.io/spklab/convert/) | Open newer After Effects / Premiere Pro projects in older versions (downgrade `.aep` / `.prproj`) · 버전 변환기 |
 
 ## Dev
