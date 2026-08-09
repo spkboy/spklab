@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spklab.org/sitemap.xml
