@@ -72,23 +72,11 @@
     text-align: center; padding: 64px 16px 40px; transition: background .12s, color .12s;
   }
   .dropframe {
-    border: none; border-radius: 0; cursor: pointer;
+    border: 2px dashed #c9c9c4; border-radius: 20px; cursor: pointer;
     padding: clamp(32px, 6vw, 72px) clamp(24px, 7vw, 96px);
-    max-width: 960px; width: 100%;
-    transition: background-color .25s;
-    background-color: transparent;
-    background-image:
-      linear-gradient(90deg, #b9b9b4 50%, transparent 50%),
-      linear-gradient(90deg, #b9b9b4 50%, transparent 50%),
-      linear-gradient(180deg, #b9b9b4 50%, transparent 50%),
-      linear-gradient(180deg, #b9b9b4 50%, transparent 50%);
-    background-size: 20px 2px, 20px 2px, 2px 20px, 2px 20px;
-    background-position: 0 0, 0 100%, 0 0, 100% 0;
-    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-    animation: ants 1.4s linear infinite;
+    max-width: 960px; width: 100%; transition: border-color .15s, background .15s;
   }
-  @keyframes ants { to { background-position: 20px 0, -20px 100%, 0 -20px, 100% 20px; } }
-  .dropframe:hover { background-color: var(--soft); }
+  .dropframe:hover { border-color: var(--fg); background: var(--soft); }
   #drop h1 {
     font-family: var(--display);
     font-size: clamp(44px, 11vw, 190px); line-height: .9; font-weight: 700;
@@ -130,7 +118,7 @@
   .howlink:hover { color: var(--fg); }
   #drop.over { background: var(--fg); color: var(--bg); }
   #drop.over .cap, #drop.over .cap .kr, #drop.over .howlink { color: var(--bg); }
-  #drop.over .dropframe { background-color: transparent; }
+  #drop.over .dropframe { border-color: var(--bg); background: transparent; }
   #drop.over .choose { background: var(--bg); color: var(--fg); }
 
   .ad-slot { display:none;  max-width: 1080px; margin: 0 auto; padding: 20px 24px; width: 100%; }
