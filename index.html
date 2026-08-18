@@ -17,11 +17,18 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"SPKLAB","url":"https://spklab.org/","description":"Free browser tools for After Effects & Premiere Pro"}</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4619859831209736" crossorigin="anonymous"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a9753997e72441d2b9a5b833faafd32e"}'></script><!-- End Cloudflare Web Analytics -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('/fonts/SpaceGrotesk-var.woff2') format('woff2-variations');
+    font-weight: 300 700;
+    font-display: swap;
+  }
   :root {
     --bg: #ffffff; --fg: #111110; --dim: #767672; --line: #e7e7e3; --soft: #f6f6f3;
-    --sans: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
-    --display: "Segoe UI Variable Display", "Segoe UI", Arial, "Malgun Gothic", sans-serif;
+    --sans: "Pretendard Variable", Pretendard, "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+    --display: "Space Grotesk", "Pretendard Variable", "Segoe UI", Arial, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -41,27 +48,46 @@
   main { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; max-width: 1080px; margin: 0 auto; padding: 96px 24px 40px; }
   h1 {
     font-family: var(--display); font-size: clamp(64px, 14vw, 220px);
-    font-weight: 800; letter-spacing: -.045em; line-height: .9; text-transform: uppercase;
+    font-weight: 700; letter-spacing: -.04em; line-height: .92; text-transform: uppercase;
   }
-  .sub { margin-top: 20px; font-size: 14px; color: var(--dim); line-height: 1.8; }
+  /* 로드 시 글자 스태거 인트로 */
+  h1 .line { display: block; overflow: hidden; }
+  h1 .word { display: inline-block; transform: translateY(112%); animation: rise .9s cubic-bezier(.16, 1, .3, 1) forwards; }
+  h1 .line:nth-child(2) .word { animation-delay: .12s; }
+  @keyframes rise { to { transform: none; } }
+  .sub { margin-top: 20px; font-size: 14px; color: var(--dim); line-height: 1.8;
+    opacity: 0; animation: fadein .8s ease .45s forwards; }
   .sub .kr { display: block; font-size: 13px; }
+  @keyframes fadein { to { opacity: 1; } }
+  @keyframes fadeup { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition: none !important; }
+  }
 
   .menu { margin-top: 64px; border-top: 1px solid var(--fg); }
   .menu a {
-    display: grid; grid-template-columns: 64px 1fr auto; align-items: baseline; gap: 18px;
+    display: grid; grid-template-columns: 34px 1fr auto; align-items: baseline; gap: 14px;
     padding: 34px 8px; border-bottom: 1px solid var(--fg);
-    color: var(--fg); text-decoration: none; transition: background .12s, color .12s;
+    color: var(--fg); text-decoration: none;
+    transition: background .28s cubic-bezier(.16, 1, .3, 1), color .28s cubic-bezier(.16, 1, .3, 1);
+    opacity: 0; animation: fadeup .7s cubic-bezier(.16, 1, .3, 1) forwards;
   }
+  .menu a:nth-child(1) { animation-delay: .55s; }
+  .menu a:nth-child(2) { animation-delay: .68s; }
   .menu a:hover { background: var(--fg); color: var(--bg); }
-  .menu .no { font-size: 13px; color: var(--dim); font-family: var(--display); }
+  .menu .no { font-size: 13px; color: var(--dim); font-family: var(--display); position: relative; top: -14px; }
   .menu a:hover .no { color: var(--bg); opacity: .6; }
   .menu .nm {
-    font-family: var(--display); font-size: clamp(28px, 6vw, 64px);
-    font-weight: 800; letter-spacing: -.03em; text-transform: uppercase; line-height: .95;
+    font-family: var(--display); font-size: clamp(28px, 6vw, 64px); margin-left: -10px;
+    font-weight: 700; letter-spacing: -.025em; text-transform: uppercase; line-height: .95;
   }
-  .menu .ds { font-size: 13px; color: var(--dim); text-align: right; line-height: 1.7; max-width: 300px; }
+  .menu .ds { font-size: 13px; color: var(--dim); text-align: right; line-height: 1.7; max-width: 300px; transition: color .28s; }
   .menu a:hover .ds { color: var(--bg); opacity: .8; }
-  .menu .arrow { font-weight: 400; }
+  .menu .arrow {
+    font-weight: 400; display: inline-block;
+    transition: transform .3s cubic-bezier(.16, 1, .3, 1);
+  }
+  .menu a:hover .arrow { transform: translateX(16px); }
 
   .ad-slot { display:none;  max-width: 1080px; margin: 48px auto 0; width: 100%; }
   .ad-slot .ad-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--dim); margin-bottom: 6px; }
@@ -87,10 +113,10 @@
 <div class="corner br">.AEP / .AET / .PRPROJ</div>
 
 <main>
-  <h1>SPK<br>LAB</h1>
+  <h1 aria-label="SPKLAB"><span class="line"><span class="word">SPK</span></span><span class="line"><span class="word">LAB</span></span></h1>
   <div class="sub">
-    Free browser tools for After Effects &amp; Premiere Pro — your files never leave your computer.
-    <span class="kr">애프터이펙트·프리미어를 위한 무료 브라우저 도구 — 파일은 컴퓨터 밖으로 나가지 않습니다.</span>
+    Small tools I built after one too many version errors — free, and your files never leave your computer.
+    <span class="kr">버전 오류에 시달리다 직접 만들어 쓰는 도구들입니다 — 무료이고, 파일은 컴퓨터 밖으로 나가지 않습니다.</span>
   </div>
 
   <nav class="menu">

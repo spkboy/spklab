@@ -18,15 +18,22 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"SPKLAB After Effects Downgrader","url":"https://spklab.org/after-effects-downgrader/","applicationCategory":"MultimediaApplication","operatingSystem":"Web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4619859831209736" crossorigin="anonymous"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a9753997e72441d2b9a5b833faafd32e"}'></script><!-- End Cloudflare Web Analytics -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('/fonts/SpaceGrotesk-var.woff2') format('woff2-variations');
+    font-weight: 300 700;
+    font-display: swap;
+  }
   :root {
     --bg: #ffffff; --fg: #111110; --dim: #767672; --line: #e7e7e3;
     --soft: #f6f6f3;
     --warn: #8a6100; --warn-bg: #fdf6e3;
     --err: #b3362a; --err-bg: #fdeeec;
     --ok: #1d7a3d; --ok-bg: #ecf7ef;
-    --sans: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
-    --display: "Segoe UI Variable Display", "Segoe UI", Arial, "Malgun Gothic", sans-serif;
+    --sans: "Pretendard Variable", Pretendard, "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+    --display: "Space Grotesk", "Pretendard Variable", "Segoe UI", Arial, sans-serif;
     --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -69,14 +76,26 @@
     text-align: center; padding: 64px 16px 40px; transition: background .12s, color .12s;
   }
   .dropframe {
-    border: 2px dashed #c9c9c4; border-radius: 20px; cursor: pointer;
+    border: none; border-radius: 0; cursor: pointer;
     padding: clamp(32px, 6vw, 72px) clamp(24px, 7vw, 96px);
-    max-width: 960px; width: 100%; transition: border-color .15s, background .15s;
+    max-width: 960px; width: 100%;
+    transition: background-color .25s;
+    background-color: transparent;
+    background-image:
+      linear-gradient(90deg, #b9b9b4 50%, transparent 50%),
+      linear-gradient(90deg, #b9b9b4 50%, transparent 50%),
+      linear-gradient(180deg, #b9b9b4 50%, transparent 50%),
+      linear-gradient(180deg, #b9b9b4 50%, transparent 50%);
+    background-size: 20px 2px, 20px 2px, 2px 20px, 2px 20px;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    animation: ants 1.4s linear infinite;
   }
-  .dropframe:hover { border-color: var(--fg); background: var(--soft); }
+  @keyframes ants { to { background-position: 20px 0, -20px 100%, 0 -20px, 100% 20px; } }
+  .dropframe:hover { background-color: var(--soft); }
   #drop h1 {
     font-family: var(--display);
-    font-size: clamp(48px, 12vw, 200px); line-height: .9; font-weight: 800;
+    font-size: clamp(48px, 12vw, 200px); line-height: .9; font-weight: 700;
     letter-spacing: -.045em; text-transform: uppercase; word-break: keep-all;
   }
   .apptabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 34px; flex-wrap: wrap; }
@@ -119,7 +138,7 @@
   #drop.over .howlink { color: var(--bg); }
   #drop.over { background: var(--fg); color: var(--bg); }
   #drop.over .cap, #drop.over .cap .kr { color: var(--bg); }
-  #drop.over .dropframe { border-color: var(--bg); background: transparent; }
+  #drop.over .dropframe { background-color: transparent; }
   #drop.over .choose { background: var(--bg); color: var(--fg); }
 
   /* 광고 슬롯 · ad slots */
@@ -145,7 +164,7 @@
   .fmeta { display: none; }
   .verline {
     font-family: var(--display);
-    margin-top: 36px; font-size: clamp(44px, 10vw, 150px); font-weight: 800;
+    margin-top: 36px; font-size: clamp(44px, 10vw, 150px); font-weight: 700;
     letter-spacing: -.045em; line-height: .9; text-transform: uppercase;
   }
   .verline .badge { display: none; }
@@ -194,7 +213,7 @@
   #info .inner { max-width: 720px; margin: 0 auto; }
   #info h2 {
     font-family: var(--display);
-    font-size: clamp(40px, 8vw, 96px); font-weight: 800; letter-spacing: -.04em;
+    font-size: clamp(40px, 8vw, 96px); font-weight: 700; letter-spacing: -.04em;
     text-transform: uppercase; line-height: .92; margin-bottom: 40px;
   }
   #info p { font-size: 14px; line-height: 1.9; margin-bottom: 8px; }
@@ -229,11 +248,15 @@
     border: 1px solid var(--line); max-width: calc(100vw - 24px);
   }
   .topnav a { color: var(--fg); text-decoration: none; padding: 7px 13px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
-  .topnav a.brand { font-weight: 800; }
+  .topnav a.brand { font-weight: 700; }
   .topnav a .sq { font-size: 8px; vertical-align: 2px; }
   .topnav a:hover { background: var(--soft); }
   .topnav a.active { background: var(--fg); color: var(--bg); }
   @media (max-width: 640px) { .topnav a { padding: 6px 9px; font-size: 10px; } .corner.tr { top: 56px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
